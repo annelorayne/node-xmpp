@@ -17,17 +17,6 @@ class Console extends EventEmitter {
     super()
     this.entity = entity
 
-    // entity.on('nonza', el => {
-    //   this.input(el)
-    // })
-    // entity.on('stanza', el => {
-    //   this.input(el)
-    // })
-    //
-    // entity.on('send', el => {
-    //   this.output(el)
-    // })
-
     entity.on('fragment', (input, output) => {
       if (!output) return
       this.output(output)
@@ -143,14 +132,24 @@ class Console extends EventEmitter {
   }
 
   input (el) {
-    this.log('⮈ IN', typeof el === 'string' ? el : this.beautify(el))
+    this.log('⮈ IN', this.beautify(el))
   }
 
   output (el) {
-    this.log('⮊ OUT', typeof el === 'string' ? el : this.beautify(el))
+    this.log('⮊ OUT', this.beautify(el))
   }
 
-  beautify (el) {
+  beautify (frag) {
+    let el
+    if (typeof frag === 'string') {
+      try {
+        el = xml.parse(frag)
+      } catch (err) {
+        return frag
+      }
+    } else {
+      el = frag
+    }
     return xml.stringify(trim(el), '  ').trim()
   }
 
@@ -171,14 +170,10 @@ class Console extends EventEmitter {
     try {
       el = xml.parse(data)
     } catch (err) {
-      this.error(`invalid XML "${data}"`, err)
+      this.error(`invalid XML "${data}"`)
       return
     }
 
-    if (this.jid && !this.jid.local && !el.attrs.to) {
-      const domain = this.entity._domain
-      el.attrs.to = domain.substr(domain.indexOf('.') + 1) // FIXME in component-core
-    }
     this.entity.send(el).then(() => {
       this.resetInput()
     })

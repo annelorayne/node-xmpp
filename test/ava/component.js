@@ -22,7 +22,7 @@ test.cb('component', t => {
 
   entity.on('authenticate', auth => {
     t.is(typeof auth, 'function')
-    auth('mysecretcomponentpassword')
+    auth('foobar')
       .then(() => {
         t.pass()
       })
@@ -30,13 +30,13 @@ test.cb('component', t => {
 
   entity.on('online', (jid) => {
     t.true(jid instanceof xmpp.jid.JID)
-    t.is(jid.toString(), 'component.localhost')
+    t.is(jid.toString(), 'node-xmpp.localhost')
   })
 
-  entity.start('xmpp://component.localhost:5347')
+  entity.start('xmpp://node-xmpp.localhost:5347')
     .then((jid) => {
       t.true(jid instanceof xmpp.jid.JID)
-      t.is(jid.toString(), 'component.localhost')
+      t.is(jid.toString(), 'node-xmpp.localhost')
     })
     .then(() => {
       t.end()

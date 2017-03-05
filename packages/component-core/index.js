@@ -14,10 +14,22 @@ const NS = 'jabber:component:accept'
 
 class Component extends Connection {
   connect (uri) {
-    const {hostname, port} = url.parse(uri)
-    const p = super.connect({port: port || 5347, host: hostname})
-    this.connectOptions = uri
-    return p
+    const match = Connection.match(uri)
+    if (!match) throw new Error(`Invalid URI "${uri}"`)
+    return super.connect(match)
+  }
+
+  // https://xmpp.org/extensions/xep-0114.html#example-4
+  send (el) {
+    if (this.jid && !el.attrs.from) {
+      el.attrs.from = this.jid.toString()
+    }
+
+    if (this.jid && !el.attrs.to) {
+      el.attrs.to = this.jid.toString()
+    }
+
+    return super.send(el)
   }
 
   header (domain, lang) {

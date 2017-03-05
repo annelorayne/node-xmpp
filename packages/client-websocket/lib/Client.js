@@ -12,7 +12,7 @@ const NS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing'
  * XMPP over WebSocket https://tools.ietf.org/html/rfc7395
 */
 
-class Client extends Connection {
+class ClientWebSocket extends Connection {
   // https://tools.ietf.org/html/rfc7395#section-3.4
   responseHeader (el, domain) {
     const {name, attrs} = el
@@ -40,7 +40,7 @@ class Client extends Connection {
   }
 }
 
-Client.prototype.Socket = Socket
-Client.prototype.NS = 'jabber:client'
+ClientWebSocket.prototype.Socket = Socket
+ClientWebSocket.prototype.NS = 'jabber:client'
 
-module.exports = Client
+module.exports = ClientWebSocket
