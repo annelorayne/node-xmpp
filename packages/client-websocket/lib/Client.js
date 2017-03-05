@@ -25,14 +25,22 @@ class ClientWebSocket extends Connection {
     )
   }
 
-  // https://tools.ietf.org/html/rfc7395#section-3.4
-  header (domain, lang) {
-    return xml`<open ${lang ? `xml:lang='${lang}'` : ''} version='1.0' xmlns='${NS_FRAMING}' to='${domain}'/>`
-  }
+
+  // // https://tools.ietf.org/html/rfc7395#section-3.4
+  // header (domain, lang) {
+  //   return xml`<open ${lang ? `xml:lang='${lang}'` : ''} version='1.0' xmlns='${NS_FRAMING}' to='${domain}'/>`
+  // }
 
   // https://tools.ietf.org/html/rfc7395#section-3.6
   footer () {
     return xml`<close xmlns="${NS_FRAMING}"/>`
+  }
+
+  streamParameters () {
+    const params = super.streamParameters()
+    params.name = 'open'
+    params.attrs.xmlns = NS_FRAMING
+    return params
   }
 
   socketParameters (uri) {

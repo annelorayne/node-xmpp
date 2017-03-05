@@ -19,6 +19,14 @@ class TCP extends Connection {
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-open
+  streamParameters () {
+    const params = super.streamParameters()
+    params.name = 'stream:stream'
+    params['xmlns:stream'] = NS_STREAM
+    return params
+  }
+
+  // https://xmpp.org/rfcs/rfc6120.html#streams-open
   responseHeader (el, domain) {
     const {name, attrs} = el
     return (
@@ -48,18 +56,7 @@ class TCP extends Connection {
     return header
   }
 
-  // // https://xmpp.org/rfcs/rfc6120.html#streams-close
-  // waitFooter (fn) {
-  //   this.parser.once('endElement', (name) => {
-  //     if (name !== 'stream:stream') return // FIXME error
-  //     fn()
-  //   })
-  // }
 
-  // https://xmpp.org/rfcs/rfc6120.html#streams-close
-  footer () {
-    return '<stream:stream/>'
-  }
 }
 
 TCP.NS = NS_STREAM

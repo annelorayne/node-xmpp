@@ -4,6 +4,7 @@ const EventEmitter = require('events')
 const StreamParser = require('@xmpp/streamparser')
 const JID = require('@xmpp/jid')
 const url = require('url')
+const xml = require('@xmpp/xml')
 
 function error (name, message) {
   const e = new Error(message)
@@ -311,15 +312,28 @@ class Connection extends EventEmitter {
   }
 
   // override
+  header(domain, lang) {
+    const {name, attrs} = this.streamParameters()
+    Object.assign(attrs, {
+      to: domain,
+      'xml:lang': lang
+    })
+    return (new xml.Element(name, attrs)).toString()
+  }
   socketParameters (uri) {
     const parsed = url.parse(uri)
     parsed.port = +parsed.port
     parsed.host = parsed.hostname
     return parsed
   }
-  responseHeader () {}
-  header () {}
-  footer () {}
+  streamParameters () {
+    return {
+      attrs: {
+        'version': '1.0',
+        'xmlns': this.NS,
+      },
+    }
+  }
 }
 
 // overrirde
