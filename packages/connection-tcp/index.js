@@ -3,7 +3,6 @@
 const Socket = require('net').Socket
 const Connection = require('@xmpp/connection')
 const {escapeXML} = require('@xmpp/xml')
-const url = require('url')
 
 const NS_STREAM = 'http://etherx.jabber.org/streams'
 
@@ -12,14 +11,11 @@ const NS_STREAM = 'http://etherx.jabber.org/streams'
 */
 
 class TCP extends Connection {
-  static match (uri) {
-    try {
-      const {protocol, hostname, port, slashes} = url.parse(uri)
-      if (!slashes || protocol !== 'xmpp:' || !hostname) return false
-      return {host: hostname, port: port ? +port : 5222}
-    } catch (err) {
-      return false
-    }
+  socketParameters (uri) {
+    const params = super.socketParameters(uri)
+    return (params.protocol === 'xmpp:')
+      ? params
+      : undefined
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-open

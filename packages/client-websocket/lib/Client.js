@@ -35,8 +35,8 @@ class ClientWebSocket extends Connection {
     return xml`<close xmlns="${NS_FRAMING}"/>`
   }
 
-  static match (uri) {
-    return uri.match(/^wss?:\/\//) ? uri : null
+  socketParameters (uri) {
+    return uri.match(/^wss?:\/\//) ? uri : undefined
   }
 }
 

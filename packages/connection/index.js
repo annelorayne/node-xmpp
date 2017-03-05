@@ -162,8 +162,7 @@ class Connection extends EventEmitter {
     return new Promise((resolve, reject) => {
       this._attachParser(new this.Parser())
       this._attachSocket(new this.Socket())
-
-      this.socket.connect(options, (err) => {
+      this.socket.connect(this.socketParameters(options), (err) => {
         if (err) reject(err)
         else resolve()
       })
@@ -312,10 +311,15 @@ class Connection extends EventEmitter {
   }
 
   // override
+  socketParameters (uri) {
+    const parsed = url.parse(uri)
+    parsed.port = +parsed.port
+    parsed.host = parsed.hostname
+    return parsed
+  }
   responseHeader () {}
   header () {}
   footer () {}
-  match () {}
 }
 
 // overrirde

@@ -18,12 +18,8 @@ class Console extends EventEmitter {
     this.entity = entity
 
     entity.on('fragment', (input, output) => {
-      if (!output) return
-      this.output(output)
-    })
-
-    entity.on('element', (el) => {
-      this.input(el)
+      if (input) this.input(input)
+      if (output) this.output(output)
     })
 
     entity.on('connect', () => {
@@ -118,7 +114,9 @@ class Console extends EventEmitter {
     entity.on('authenticate', (auth) => {
       this.ask({
         text: 'Enter password'
-      }).then(auth)
+      }).then(auth).catch((err) => {
+        this.error('authentication', err.message)
+      })
     })
 
     entity.on('connect', () => {
@@ -126,7 +124,9 @@ class Console extends EventEmitter {
         text: 'Enter domain',
         value: 'localhost'
       }).then((domain) => {
-        entity.open({domain})
+        entity.open({domain}).catch((err) => {
+          this.error('open - ', err.message)
+        })
       })
     })
   }

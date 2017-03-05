@@ -1,7 +1,6 @@
 'use strict'
 
 const Connection = require('@xmpp/connection-tcp')
-const url = require('url')
 const crypto = require('crypto')
 const {tagString, tag} = require('@xmpp/xml')
 
@@ -10,17 +9,17 @@ const {tagString, tag} = require('@xmpp/xml')
  * https://xmpp.org/extensions/xep-0114.html
  */
 
-function getServerDomain(domain) {
-  return domain.substr(domain.indexOf('.') + 1);
+function getServerDomain (domain) {
+  return domain.substr(domain.indexOf('.') + 1)
 }
 
 const NS = 'jabber:component:accept'
 
 class Component extends Connection {
-  connect (uri) {
-    const match = Connection.match(uri)
-    if (!match) throw new Error(`Invalid URI "${uri}"`)
-    return super.connect(match)
+  socketParameters (uri) {
+    const params = super.socketParameters(uri)
+    params.port = params.port || 5347
+    return params
   }
 
   // https://xmpp.org/extensions/xep-0114.html#example-4
@@ -36,6 +35,7 @@ class Component extends Connection {
     return super.send(el)
   }
 
+  // https://xmpp.org/extensions/xep-0114.html#example-1
   header (domain, lang) {
     return tagString`
       <?xml version='1.0'?>
@@ -43,15 +43,7 @@ class Component extends Connection {
     `
   }
 
-  open (...args) {
-    return super.open(...args).then((el) => {
-      this.emit('authenticate', (secret) => {
-        return this.authenticate(el.attrs.id, secret)
-      })
-    })
-  }
-
-  // https://tools.ietf.org/html/rfc7395#section-3.4
+  // https://xmpp.org/extensions/xep-0114.html#example-2
   responseHeader (el, domain) {
     const {name, attrs} = el
     return (
@@ -63,7 +55,16 @@ class Component extends Connection {
     )
   }
 
-  // FIXME move to module?
+  // https://xmpp.org/extensions/xep-0114.html#example-3
+  open (...args) {
+    return super.open(...args).then((el) => {
+      this.emit('authenticate', (secret) => {
+        return this.authenticate(el.attrs.id, secret)
+      })
+    })
+  }
+
+  // https://xmpp.org/extensions/xep-0114.html#example-3
   authenticate (id, password) {
     const hash = crypto.createHash('sha1')
     hash.update(id + password, 'binary')
@@ -73,7 +74,7 @@ class Component extends Connection {
       }
       this._authenticated()
       this._jid(this._domain)
-      this._online() // FIXME should be emitted after promise resolve
+      this._online()
     })
   }
 }

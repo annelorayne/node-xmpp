@@ -19,10 +19,12 @@ class Client extends Connection {
   }
 
   connect (uri) {
-    this.connectOptions = uri
-    let params
     const Transport = this.transports.find(Transport => {
-      return params = Transport.match(uri) // eslint-disable-line no-return-assign
+      try {
+        return Transport.prototype.socketParameters(uri) !== undefined
+      } catch (err) {
+        return false
+      }
     })
 
     if (!Transport) throw new Error('No compatible connection method found.')
@@ -30,7 +32,11 @@ class Client extends Connection {
     this.Transport = Transport
     this.Socket = Transport.prototype.Socket
 
-    return super.connect(params)
+    return super.connect(uri)
+  }
+
+  socketParameters (...args) {
+    return this.Transport.prototype.socketParameters(...args)
   }
 
   header (...args) {

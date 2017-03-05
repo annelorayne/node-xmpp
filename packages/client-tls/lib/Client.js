@@ -1,29 +1,21 @@
 'use strict'
 
-const url = require('url')
 const tls = require('tls')
-const Connection = require('@xmpp/connection-tcp')
+const ConnectionTCP = require('@xmpp/connection-tcp')
+const Connection = require('@xmpp/connection')
 
-class TLS extends Connection {
-  connect(uri) {
-    const match = TLS.match(uri)
-    if (!match) throw new Error(`Invalid URI "${uri}"`)
-    return super.connect(match)
-  }
 
-  static match (uri) {
-    try {
-      const {protocol, hostname, port, slashes} = url.parse(uri)
-      if (!slashes || protocol !== 'xmpps:' || !hostname) return false
-      return {host: hostname, port: port ? +port : 5223}
-    } catch (err) {
-      return false
-    }
+class ClientTLS extends ConnectionTCP {
+  socketParameters (URI) {
+    const params =  Connection.prototype.socketParameters(URI)
+    params.port = params.port || 5223
+    return (params.protocol === 'xmpps:')
+      ? params
+      : undefined
   }
 }
 
-TLS.prototype.Socket = tls.TLSSocket
+ClientTLS.prototype.Socket = tls.TLSSocket
+ClientTLS.prototype.NS = 'jabber:client'
 
-TLS.prototype.NS = 'jabber:client'
-
-module.exports = TLS
+module.exports = ClientTLS

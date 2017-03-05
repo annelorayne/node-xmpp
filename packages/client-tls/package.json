@@ -6,6 +6,7 @@
   "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
+    "@xmpp/connection": "^0.0.6",
     "@xmpp/connection-tcp": "^0.0.6"
   }
 }
