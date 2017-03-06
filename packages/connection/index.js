@@ -190,18 +190,32 @@ class Connection extends EventEmitter {
   open (options) {
     this.openOptions = options
     return new Promise((resolve, reject) => {
-      this.parser.once('start', el => {
-        if (this.responseHeader(el, domain)) {
-          this._domain = domain
-          this.lang = el.attrs['xml:lang']
-          resolve(el)
-          this.emit('open', el)
-        } else {
-          reject(new Error('invalid response header received from server'))
-        }
-      })
+      const {name, attrs} = this.streamParameters()
+      console.log(name, attrs)
+
       const {domain, lang} = options
-      this.write(this.header(domain, lang))
+      this.write(this.header({
+        name,
+        attrs: Object.assign({}, attrs, {
+          to: domain,
+          'xml:lang': lang
+        })
+      }))
+
+      this.parser.once('start', el => {
+        if (
+          el.name !== name ||
+          !Object.keys(attrs).every(attr => el.attrs[attr] === attrs[attr]) ||
+          el.from !== domain || !el.id
+        ) {
+          return this.once('error', reject)
+        }
+
+        this._domain = domain
+        this.lang = el.attrs['xml:lang']
+        resolve(el)
+        this.emit('open', el)
+      })
     })
   }
 
@@ -312,13 +326,11 @@ class Connection extends EventEmitter {
   }
 
   // override
-  header(domain, lang) {
-    const {name, attrs} = this.streamParameters()
-    Object.assign(attrs, {
-      to: domain,
-      'xml:lang': lang
-    })
+  header ({name, attrs}) {
     return (new xml.Element(name, attrs)).toString()
+  }
+  footer () {
+    return ''
   }
   socketParameters (uri) {
     const parsed = url.parse(uri)
@@ -328,6 +340,7 @@ class Connection extends EventEmitter {
   }
   streamParameters () {
     return {
+      name: '',
       attrs: {
         'version': '1.0',
         'xmlns': this.NS,

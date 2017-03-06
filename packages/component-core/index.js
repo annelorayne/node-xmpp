@@ -35,26 +35,6 @@ class Component extends Connection {
     return super.send(el)
   }
 
-  // https://xmpp.org/extensions/xep-0114.html#example-1
-  header (domain, lang) {
-    return tagString`
-      <?xml version='1.0'?>
-      <stream:stream to='${domain}' ${lang ? `xml:lang='${lang}'` : ''} xmlns='${this.NS}' xmlns:stream='${super.NS}'>
-    `
-  }
-
-  // https://xmpp.org/extensions/xep-0114.html#example-2
-  responseHeader (el, domain) {
-    const {name, attrs} = el
-    return (
-      name === 'stream:stream' &&
-      attrs.xmlns === this.NS &&
-      attrs['xmlns:stream'] === super.NS &&
-      attrs.from === domain &&
-      attrs.id
-    )
-  }
-
   // https://xmpp.org/extensions/xep-0114.html#example-3
   open (...args) {
     return super.open(...args).then((el) => {

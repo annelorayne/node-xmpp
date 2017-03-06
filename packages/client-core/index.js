@@ -46,10 +46,6 @@ class Client extends Connection {
   footer (...args) {
     return this.Transport.prototype.footer(...args)
   }
-
-  responseHeader (...args) {
-    return this.Transport.prototype.footer(...args)
-  }
 }
 
 Client.prototype.NS = 'jabber:client'

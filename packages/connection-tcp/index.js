@@ -22,41 +22,22 @@ class TCP extends Connection {
   streamParameters () {
     const params = super.streamParameters()
     params.name = 'stream:stream'
-    params['xmlns:stream'] = NS_STREAM
+    params.attrs['xmlns:stream'] = NS_STREAM
+    console.log('tcp', params)
     return params
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-open
-  responseHeader (el, domain) {
-    const {name, attrs} = el
-    return (
-      name === 'stream:stream' &&
-      attrs.xmlns === this.NS &&
-      attrs['xmlns:stream'] === NS_STREAM &&
-      attrs.from === domain &&
-      attrs.version === '1.0' &&
-      attrs.id
-    )
+  header (...args) {
+    const header = super.header(...args)
+    console.log(header)
+    return `<?xml version='1.0'?>` + header.substr(0, header.length - 2) + '>'
   }
 
-  // https://xmpp.org/rfcs/rfc6120.html#streams-open
-  header (domain, lang) {
-    const attrs = {
-      to: domain,
-      version: '1.0',
-      'xml:lang': lang,
-      xmlns: this.NS,
-      'xmlns:stream': NS_STREAM
-    }
-    let header = `<?xml version='1.0'?><stream:stream `
-    for (let attr in attrs) {
-      if (attrs[attr]) header += `${attr}='${escapeXML(attrs[attr])}' `
-    }
-    header += '>'
-    return header
+  // https://xmpp.org/rfcs/rfc6120.html#streams-close
+  footer() {
+    return '</stream:stream>'
   }
-
-
 }
 
 TCP.NS = NS_STREAM
