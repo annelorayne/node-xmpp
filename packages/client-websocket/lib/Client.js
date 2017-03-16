@@ -15,15 +15,17 @@ const NS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing'
 class ClientWebSocket extends Connection {
   // https://tools.ietf.org/html/rfc7395#section-3.6
   footer () {
-    return xml`<close xmlns="${NS_FRAMING}"/>`
+    return xml.Element('close', {
+      xmlns: NS_FRAMING
+    })
   }
 
   // https://tools.ietf.org/html/rfc7395#section-3.4
-  streamParameters () {
-    const params = super.streamParameters()
-    params.name = 'open'
-    params.attrs.xmlns = NS_FRAMING
-    return params
+  headerElement () {
+    const el = super.headerElement()
+    el.name = 'open'
+    el.attrs.xmlns = NS_FRAMING
+    return el
   }
 
   socketParameters (uri) {

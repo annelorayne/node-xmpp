@@ -2,7 +2,7 @@
 
 const Socket = require('net').Socket
 const Connection = require('@xmpp/connection')
-const {escapeXML} = require('@xmpp/xml')
+const {Element} = require('@xmpp/xml')
 
 const NS_STREAM = 'http://etherx.jabber.org/streams'
 
@@ -19,19 +19,17 @@ class TCP extends Connection {
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-open
-  streamParameters () {
-    const params = super.streamParameters()
-    params.name = 'stream:stream'
-    params.attrs['xmlns:stream'] = NS_STREAM
-    console.log('tcp', params)
-    return params
+  headerElement () {
+    const el = super.headerElement()
+    el.name = 'stream:stream'
+    el.attrs['xmlns:stream'] = NS_STREAM
+    return el
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-open
-  header (...args) {
-    const header = super.header(...args)
-    console.log(header)
-    return `<?xml version='1.0'?>` + header.substr(0, header.length - 2) + '>'
+  header (el) {
+    const frag = el.toString()
+    return `<?xml version='1.0'?>` + frag.substr(0, frag.length - 2) + '>'
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-close
@@ -40,7 +38,6 @@ class TCP extends Connection {
   }
 }
 
-TCP.NS = NS_STREAM
 TCP.prototype.NS = NS_STREAM
 TCP.prototype.Socket = Socket
 

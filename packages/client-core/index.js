@@ -43,8 +43,16 @@ class Client extends Connection {
     return this.Transport.prototype.header(...args)
   }
 
+  headerElement (...args) {
+    return this.Transport.prototype.headerElement(...args)
+  }
+
   footer (...args) {
     return this.Transport.prototype.footer(...args)
+  }
+
+  footerElement (...args) {
+    return this.Transport.prototype.footerElement(...args)
   }
 }
 

@@ -190,23 +190,20 @@ class Connection extends EventEmitter {
   open (options) {
     this.openOptions = options
     return new Promise((resolve, reject) => {
-      const {name, attrs} = this.streamParameters()
-      console.log(name, attrs)
-
       const {domain, lang} = options
-      this.write(this.header({
-        name,
-        attrs: Object.assign({}, attrs, {
-          to: domain,
-          'xml:lang': lang
-        })
-      }))
+
+      const headerElement = this.headerElement()
+      headerElement.attrs.to = domain
+      headerElement.attrs['xml:lang'] = lang
+
+      this.write(this.header(headerElement))
 
       this.parser.once('start', el => {
         if (
-          el.name !== name ||
-          !Object.keys(attrs).every(attr => el.attrs[attr] === attrs[attr]) ||
-          el.from !== domain || !el.id
+          el.name !== headerElement.name ||
+          !Object.keys(headerElement.attrs).every(attr => el.attrs[attr] === headerElement.attrs[attr]) ||
+          el.from !== domain ||
+          !el.id
         ) {
           return this.once('error', reject)
         }
@@ -223,7 +220,7 @@ class Connection extends EventEmitter {
    * closes the stream
    */
   close () {
-    return this.promiseWrite(this.footer())
+    return this.promiseWrite(this.footer(this.footerElement()))
   }
 
   /**
@@ -326,26 +323,24 @@ class Connection extends EventEmitter {
   }
 
   // override
-  header ({name, attrs}) {
-    return (new xml.Element(name, attrs)).toString()
+  header (el) {
+    return el.toString()
   }
-  footer () {
-    return ''
+  headerElement () {
+    return new xml.Element('', {
+      version: '1.0',
+      xmlns: this.NS,
+    })
   }
+  footer (el) {
+    return el.toString()
+  }
+  footerElement () {}
   socketParameters (uri) {
     const parsed = url.parse(uri)
     parsed.port = +parsed.port
     parsed.host = parsed.hostname
     return parsed
-  }
-  streamParameters () {
-    return {
-      name: '',
-      attrs: {
-        'version': '1.0',
-        'xmlns': this.NS,
-      },
-    }
   }
 }
 
