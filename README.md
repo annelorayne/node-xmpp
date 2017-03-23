@@ -1,6 +1,6 @@
 # node-xmpp
 
-XMPP for JavaScript.
+XMPP for JavaScript. + [node-xmpp-client-virtus](https://github.com/annelorayne/node-xmpp/tree/master/packages/node-xmpp-client-virtus) (forked from node-xmpp)
 
 [![build status](https://img.shields.io/travis/node-xmpp/node-xmpp/master.svg?maxAge=2592000&style=flat-square)](https://travis-ci.org/node-xmpp/node-xmpp/branches)
 [![Coverage Status](https://img.shields.io/coveralls/node-xmpp/node-xmpp.svg?maxAge=2592000&style=flat-square)](https://coveralls.io/r/node-xmpp/node-xmpp)
@@ -12,6 +12,9 @@ node-xmpp is a set of XMPP libraries for JavaScript.
 
 ## packages
 
+Added node-xmpp-client-virtus
+
+- [node-xmpp-client-virtus](https://github.com/annelorayne/node-xmpp/tree/master/packages/node-xmpp-client-virtus)
 - [node-xmpp-server](https://github.com/node-xmpp/node-xmpp/tree/master/packages/node-xmpp-server)
 - [node-xmpp-client](https://github.com/node-xmpp/node-xmpp/tree/master/packages/node-xmpp-client)
 - [node-xmpp-component](https://github.com/node-xmpp/node-xmpp/tree/master/packages/node-xmpp-component)

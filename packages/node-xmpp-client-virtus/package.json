@@ -1,0 +1,50 @@
+{
+  "name": "node-xmpp-client-virtus",
+  "version": "1.0.0",
+  "description": "XMPP custom client for JavaScript. (forked from node-xmpp-client)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/annelorayne/node-xmpp-client-virtus.git"
+  },
+  "homepage": "https://github.com/annelorayne/node-xmpp-client-virtus",
+  "bugs": {
+    "url": "https://github.com/annelorayne/node-xmpp-client-virtus/issues"
+  },
+  "scripts": {
+    "prepublish": "npm run bundle",
+    "bundle": "../../node_modules/.bin/browserify -s XMPP index.js -o browserify.js"
+  },
+  "keywords": [
+    "client",
+    "XMPP",
+    "C2S",
+    "WebSocket",
+    "BOSH",
+    "X-TOKEN"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "browser-request": "^0.3.3",
+    "debug": "^2.2.0",
+    "md5.js": "^1.3.3",
+    "minimist": "^1.2.0",
+    "node-xmpp-core": "^5.0.9",
+    "request": "^2.65.0",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {
+    "node-xmpp-server": "^2.2.7"
+  },
+  "browser": {
+    "request": "browser-request",
+    "ws": false,
+    "path": false,
+    "crypto": false
+  },
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "author": "Anne Lorayne Moreira <annelorayne@gmail.com> (https://annelorayne.github.io/)"
+}
